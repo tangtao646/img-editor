@@ -1,13 +1,17 @@
 // app/components/ProcessSettings.tsx
 "use client";
 
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { ToolSettings } from '../lib/types';
+import {
+    AD_CLIENT_ID,
+    AD_SLOT_SETTINGS_RECTANGLE
+} from '../lib/adConfig';
 
 // 默认配置对象 (供 page.tsx 使用)
 export const defaultSettings: ToolSettings = {
     resize: {
-        enabled: true,
+        enabled: false,
         mode: 'max_side',
         value: 1200,
     },
@@ -23,9 +27,27 @@ export const defaultSettings: ToolSettings = {
 interface ProcessSettingsProps {
     settings: ToolSettings;
     onSettingsChange: (newSettings: ToolSettings) => void;
+    isDisabled: boolean;
 }
 
-export function ProcessSettings({ settings, onSettingsChange }: ProcessSettingsProps) {
+// 辅助函数：运行广告推送
+const pushAdsense = () => {
+    try {
+        // @ts-ignore
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+        console.error('AdSense push failed in ProcessSettings:', e);
+    }
+};
+
+export function ProcessSettings({ settings, onSettingsChange, isDisabled }: ProcessSettingsProps) {
+
+    // 在组件渲染完成后，尝试推送广告
+    useEffect(() => {
+        if (!isDisabled && AD_CLIENT_ID && AD_CLIENT_ID !== 'ca-pub-0000000000000000') {
+            pushAdsense();
+        }
+    }, [isDisabled, settings]);
 
     const handleChange = (group: keyof ToolSettings, key: string, value: any) => {
         onSettingsChange({

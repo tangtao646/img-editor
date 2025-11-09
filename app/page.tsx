@@ -1,11 +1,27 @@
 // app/page.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageUploader from './components/ImageUploader';
 import { ProcessSettings, defaultSettings } from './components/ProcessSettings';
 import ProcessingFlow from './components/ProcessingFlow';
 import { ToolSettings } from './lib/types';
+import {
+    AD_CLIENT_ID,
+    AD_SLOT_SETTINGS_RECTANGLE
+} from './lib/adConfig';
+
+const isDisabled = false;
+
+// 辅助函数：运行广告推送
+const pushAdsense = () => {
+    try {
+        // @ts-ignore
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+        console.error('AdSense push failed in ProcessSettings:', e);
+    }
+};
 
 export default function HomePage() {
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -13,10 +29,22 @@ export default function HomePage() {
 
     const fileCount = uploadedFiles.length;
 
+    // 在组件渲染完成后，尝试推送广告
+    useEffect(() => {
+        if (!isDisabled && AD_CLIENT_ID && AD_CLIENT_ID !== 'ca-pub-0000000000000000') {
+            pushAdsense();
+        }
+    }, [isDisabled, settings]);
+
     return (
         // 整体背景使用柔和的浅色，移除原有的整体 padding
-        <div className="min-h-screen bg-gray-50"> 
-            
+        <div className="min-h-screen bg-gray-50">
+             <script 
+                async 
+                src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`} 
+                crossOrigin="anonymous" 
+            ></script>
+
             {/* --- 新增：导航栏 (Header) --- */}
             <header className="w-full bg-white shadow-lg sticky top-0 z-50 py-4 px-4 md:px-10 border-b border-gray-200">
                 <div className="max-w-8xl mx-auto flex justify-between items-center">
@@ -38,22 +66,29 @@ export default function HomePage() {
 
             {/* --- 主内容区域：应用 padding --- */}
             {/* 这里的 padding 确保内容与导航栏之间有空间 */}
-            <div className="p-4 md:p-10 pt-4 md:pt-6"> 
+            <div className="p-4 md:p-10 pt-4 md:pt-6">
                 {/* --- 核心三列网格布局 (Desktop/XL+) --- */}
                 {/* 布局：[左侧广告 (100px)] [主内容] [右侧广告 (100px)] */}
-                <div className="grid grid-cols-1 xl:grid-cols-[100px_minmax(0,_1fr)_100px] gap-8 justify-center max-w-8xl mx-auto">
-                    
+                <div className="grid grid-cols-1 xl:grid-cols-[160px_minmax(0,_1fr)_160px] gap-8 justify-center max-w-8xl mx-auto">
+
                     {/* --- 广告位 D: 左侧摩天大楼 (Skyscraper) --- */}
                     {/* sticky top-10 确保广告位于粘性导航栏下方 */}
-                    <div className="hidden xl:block sticky top-10 h-min">
-                        <div 
+                    <div className="hidden xl:block sticky top-20 h-min">
+                        <div
                             className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-sm font-mono p-1"
-                            // 宽度保持 100px
-                            style={{ width: '100px', height: '600px', fontSize: '10px' }}
+                            // 宽度和高度调整
+                            style={{ width: '160px', height: '300px', fontSize: '10px' }}
                         >
-                            [广告 D: 左侧 (100x600)]
+                            {/* 修复 ins 标签自闭合问题 */}
+                            <ins
+                                className="adsbygoogle"
+                                style={{ display: 'inline-block', width: '100%', height: '100%' }}
+                                data-ad-client={AD_CLIENT_ID}
+                                data-ad-slot={AD_SLOT_SETTINGS_RECTANGLE}
+                            ></ins>
                         </div>
                     </div>
+
 
                     {/* --- 主内容列 (居中) --- */}
                     <div className="flex flex-col items-center w-full">
@@ -61,7 +96,7 @@ export default function HomePage() {
                         <main className="w-full max-w-5xl bg-white p-8 md:p-12 rounded-3xl shadow-2xl transition-all duration-300 transform hover:shadow-3xl">
 
                             {/* 主页面标题 - 与导航栏 Logo 分开 */}
-                            <h1 className="text-4xl md:text-4xl font-black mb-6 text-center tracking-tight">
+                            <h1 className="text-4xl md:text-6xl font-black mb-6 text-center tracking-tight">
                                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
                                     ✨ 批量图片处理流程
                                 </span>
@@ -69,19 +104,10 @@ export default function HomePage() {
                             <p className="text-center text-gray-500 mb-8">轻松实现图片格式转换、尺寸调整和文件大小优化。</p>
 
 
-                            {/* --- 广告位 A: 头部横幅 (Leaderboard) --- (保持原位，防止 CLS) */}
-                            <div id="ad-top-leaderboard" className="w-full mb-8 flex justify-center">
-                                <div 
-                                    className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-xs font-mono"
-                                    style={{ minHeight: '90px', width: '100%', maxWidth: '728px' }}
-                                >
-                                    [广告位 A: 头部横幅 (728x90 / 响应式)]
-                                </div>
-                            </div>
 
                             {/* 1. 上传 - 突出显示区域 */}
                             <div className="border border-dashed border-gray-300 p-6 rounded-2xl bg-indigo-50/50 mb-12">
-                                <h2 className="text-2xl font-extrabold mb-5 text-indigo-700 flex items-center">
+                                <h2 className="text-3xl font-extrabold mb-5 text-indigo-700 flex items-center">
                                     <span className="mr-3">1. 上传图片</span>
                                 </h2>
                                 <ImageUploader onFilesSelected={setUploadedFiles} />
@@ -90,14 +116,13 @@ export default function HomePage() {
                             {/* 2. 配置与 3. 执行 (上传文件后显示) */}
                             {fileCount > 0 ? (
                                 <>
-                                    {/* 🚀 修正：将 H2 标题和文件计数器并排放置 */}
-                    
-                                    
-                                    <ProcessSettings settings={settings} onSettingsChange={setSettings} />
-                                    
-                                    <ProcessingFlow 
-                                        files={uploadedFiles} 
-                                        settings={settings} 
+
+
+                                    <ProcessSettings settings={settings} onSettingsChange={setSettings} isDisabled={false} />
+
+                                    <ProcessingFlow
+                                        files={uploadedFiles}
+                                        settings={settings}
                                     />
                                 </>
                             ) : (
@@ -111,23 +136,30 @@ export default function HomePage() {
                             )}
 
                         </main>
-                        
+
                         {/* 页脚 - 保持在主内容下方居中 */}
                         <footer className="mt-8 text-gray-500 text-sm text-center">
                             由 Gemini 提供支持 | 所有处理均在您的浏览器本地完成
                         </footer>
                     </div>
-                    
+
                     {/* --- 广告位 E: 右侧摩天大楼 (Skyscraper) --- */}
-                    <div className="hidden xl:block sticky top-10 h-min">
-                        <div 
+                    <div className="hidden xl:block sticky top-20 h-min">
+                        <div
                             className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-sm font-mono p-1"
-                            // 宽度保持 100px
-                            style={{ width: '100px', height: '600px', fontSize: '10px' }}
+                            // 宽度和高度调整
+                            style={{ width: '160px', height: '300px', fontSize: '10px' }}
                         >
-                            [广告 E: 右侧 (100x600)]
+                            {/* 修复 ins 标签自闭合问题 */}
+                            <ins
+                                className="adsbygoogle"
+                                style={{ display: 'inline-block', width: '100%', height: '100%' }}
+                                data-ad-client={AD_CLIENT_ID}
+                                data-ad-slot={AD_SLOT_SETTINGS_RECTANGLE}
+                            ></ins>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
