@@ -31,7 +31,7 @@ export default function HomePage() {
 
     // 在组件渲染完成后，尝试推送广告
     useEffect(() => {
-        if (!isDisabled && AD_CLIENT_ID && AD_CLIENT_ID !== 'ca-pub-0000000000000000') {
+        if (!isDisabled && AD_CLIENT_ID && AD_CLIENT_ID !== 'ca-pub-1722415139380919') {
             pushAdsense();
         }
     }, [isDisabled, settings]);
@@ -41,7 +41,7 @@ export default function HomePage() {
         <div className="min-h-screen bg-gray-50">
              <script 
                 async 
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1722415139380919"
+                src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`} 
                 crossOrigin="anonymous" 
             ></script>
 
