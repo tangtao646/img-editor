@@ -1,6 +1,6 @@
 // app/components/ProcessSettings.tsx
 "use client";
-
+import { useTranslation, Language } from '../lib/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { ToolSettings } from '../lib/types';
 import {
@@ -41,6 +41,8 @@ const pushAdsense = () => {
 };
 
 export function ProcessSettings({ settings, onSettingsChange, isDisabled }: ProcessSettingsProps) {
+    
+    const { t, tf } = useTranslation();
 
     // 在组件渲染完成后，尝试推送广告
     useEffect(() => {
@@ -90,7 +92,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
     const renderQualitySlider = () => (
         <div className="mt-2">
             <label className="block text-sm font-medium mb-1 text-gray-700">
-                JPEG/WebP 质量: <span className="font-semibold text-blue-600">{Math.round(settings.format.quality * 100)}%</span>
+                {t('qualityLabel')} <span className="font-semibold text-blue-600">{Math.round(settings.format.quality * 100)}%</span>
             </label>
             <input
                 type="range"
@@ -109,7 +111,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
     // 渲染尺寸输入框
     const renderResizeInput = () => {
         const isPercentage = settings.resize.mode === 'percentage';
-        const unit = isPercentage ? '%' : '像素 (px)';
+        const unit = isPercentage ? '%' : t('unitPixel');
 
         return (
             <div className="flex items-center space-x-3">
@@ -130,7 +132,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
 
     return (
         <div className="my-8">
-            <h2 className="text-3xl font-bold mb-4 text-indigo-700">⚙️ 2. 处理配置</h2>
+            <h2 className="text-2xl font-bold mb-4 text-indigo-700">{t('settingsHeading')}</h2>
 
             {/* 主配置网格：将所有设置分成两栏 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -140,7 +142,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
 
                     {/* 格式选择 */}
                     <div>
-                        <h3 className="text-xl font-extrabold mb-3 text-gray-900">输出格式</h3>
+                        <h3 className="text-xl font-extrabold mb-3 text-gray-900">{t('formatHeading')}</h3>
                         <div className="flex space-x-4">
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
@@ -150,7 +152,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
                                     onChange={() => handleChange('format', 'type', 'webp')}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="font-medium text-gray-700">WebP (最佳压缩)</span>
+                                <span className="font-medium text-gray-700">{t('formatWebp')}</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
@@ -160,14 +162,14 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
                                     onChange={() => handleChange('format', 'type', 'jpeg')}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="font-medium text-gray-700">JPEG</span>
+                                <span className="font-medium text-gray-700">{t('formatJpeg')}</span>
                             </label>
                         </div>
                     </div>
 
                     {/* 质量滑块 */}
                     <div className="border-t pt-4">
-                        <h3 className="text-xl font-extrabold mb-3 text-gray-900">压缩质量</h3>
+                        <h3 className="text-xl font-extrabold mb-3 text-gray-900">{t('qualityHeading')}</h3>
                         {renderQualitySlider()}
                     </div>
 
@@ -178,7 +180,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
                 <div className={`p-6 rounded-xl shadow-lg transition-all duration-300 ${settings.resize.enabled ? 'bg-white border-2 border-indigo-400' : 'bg-gray-50 border border-gray-300'
                     }`}>
                     <h3 className="text-xl font-extrabold mb-4 flex items-center justify-between text-gray-900">
-                        图片尺寸调整
+                        {t('resizeHeading')}
                         <input
                             type="checkbox"
                             checked={settings.resize.enabled}
@@ -192,7 +194,7 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
                             {/* 模式选择 */}
                             <div>
                                 {/* 🚀 优化：字体颜色统一 */}
-                                <label className="block text-sm font-medium mb-1 text-gray-700">缩放模式</label>
+                                <label className="block text-sm font-medium mb-1 text-gray-700">{t('modeLabel')}</label>
                                 <select
                                     value={settings.resize.mode}
                                     // 🚀 修正：调用新的处理函数
@@ -200,16 +202,16 @@ export function ProcessSettings({ settings, onSettingsChange, isDisabled }: Proc
                                     // 🚀 优化：字体颜色统一
                                     className="p-2 border border-gray-300 rounded-lg w-full focus:border-blue-500 text-gray-900"
                                 >
-                                    <option value="max_side">按最大边长缩放 (适配)</option>
-                                    <option value="fixed_width">固定宽度</option>
-                                    <option value="fixed_height">固定高度</option>
-                                    <option value="percentage">按百分比缩放</option>
+                                    <option value="max_side">{t('modeMaxSide')}</option>
+                                    <option value="fixed_width">{t('modeFixedWidth')}</option>
+                                    <option value="fixed_height">{t('modeFixedHeight')}</option>
+                                    <option value="percentage">{t('modePercentage')}</option>
                                 </select>
                             </div>
 
                             {/* 值输入 */}
                             <div>
-                                <label className="block text-sm font-medium mb-1 text-gray-700">目标值</label>
+                                <label className="block text-sm font-medium mb-1 text-gray-700">{t('valueLabel')}</label>
                                 {renderResizeInput()}
                             </div>
                         </div>

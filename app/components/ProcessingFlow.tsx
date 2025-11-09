@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { useTranslation, Language } from '../lib/i18n';
 import { ToolSettings, ProcessedFile } from '../lib/types';
 import { processImage, loadImage } from '../lib/imageProcessor';
 import { batchDownload } from '../lib/batchDownloader';
@@ -22,6 +23,7 @@ const formatBytes = (bytes: number) => {
 };
 
 export default function ProcessingFlow({ files, settings }: ProcessingFlowProps) {
+    const { t, tf } = useTranslation();
     const [processedList, setProcessedList] = useState<ProcessedFile[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -141,10 +143,10 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
 
     const renderFileStatus = (item: ProcessedFile) => {
         switch (item.status) {
-            case 'pending': return <span className="text-gray-500">等待配置...</span>;
-            case 'processing': return <span className="text-blue-500 font-medium animate-pulse">处理中...</span>;
-            case 'success': return <span className="text-green-600 font-semibold">✅ 完成</span>;
-            case 'failed': return <span className="text-red-600 font-semibold">❌ 失败</span>;
+            case 'pending': return <span className="text-gray-500">{t('flowStatusPending')}</span>;
+            case 'processing': return <span className="text-blue-500 font-medium animate-pulse">{t('flowStatusProcessing')}</span>;
+            case 'success': return <span className="text-green-600 font-semibold">✅ {t('flowStatusSuccess')}</span>;
+            case 'failed': return <span className="text-red-600 font-semibold">❌ {t('flowStatusFailed')}</span>;
             default: return null;
         }
     };
@@ -159,7 +161,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
 
     return (
         <div className="my-8 p-6 bg-white rounded-xl shadow-lg">
-            <h2 className="text-3xl font-bold mb-4 text-indigo-700">🚀 3. 执行与结果</h2>
+            <h2 className="text-3xl font-bold mb-4 text-indigo-700"> 3. {t('flowHeading')}</h2>
 
             {/* 动作按钮区 */}
             <div className="flex items-center space-x-4 mb-6">
@@ -173,9 +175,10 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                         {isProcessing ? (
                             <div className="flex items-center">
                                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                处理中 ({progress}%)
+                                {tf('flowProcessing', { 'progress': progress })}
+
                             </div>
-                        ) : '开始批量处理'}
+                        ) : t('flowStartProcessing')}
                     </button>
                 )}
 
@@ -186,14 +189,14 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                         className={`font-bold py-3 px-6 rounded-lg text-lg transition-colors shadow-md flex items-center ${progress === 100 ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-400/50' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                             }`}
                     >
-                        ⬇️ 下载所有 ({successCount})
+                        ⬇️ {tf('flowDownloadAll', { 'count': successCount })}
                     </button>
                 )}
 
                 {/* 补充：处理完成提示 (在没有下载按钮时，例如没有成功的图片) */}
                 {progress === 100 && successCount === 0 && !isProcessing && (
                     <span className="text-xl font-semibold text-red-600">
-                        处理完成，但没有图片成功生成。
+                        {t('flowDoneNoSuccess')}
                     </span>
                 )}
             </div>
@@ -202,12 +205,15 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
             {(isProcessing || successCount > 0) && (
                 <div className="mt-4 p-5 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-100 shadow-inner">
                     <p className="text-xl font-bold text-blue-900">
-                        处理概览: {successCount}/{files.length} 张图片已完成
+                        {tf("flowSummaryTitle", { 'successCount': successCount, 'totalCount': files.length })}
                     </p>
                     <p className="text-base text-blue-800 mt-2">
-                        总计节省空间:
+                        {t('flowSummarySaved')}
                         <span className="font-extrabold text-red-600 ml-2">
-                            {formatBytes(totalSizeReduction)} ({Math.round(sizeDiffPercentage)}% 减少)
+                            {tf('flowSavedReduction', {
+                                'reduction': formatBytes(totalSizeReduction),
+                                'percentage': sizeDiffPercentage.toFixed(2)
+                            })}
                         </span>
                     </p>
                 </div>
@@ -250,12 +256,12 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                                         {item.originalDimensions.width}x{item.originalDimensions.height} px
                                     </span>
                                 ) : (
-                                    <span className="text-gray-400">等待尺寸</span>
+                                    <span className="text-gray-400">{t('flowDetailLoadingDimensions')}</span>
                                 )}
                             </div>
 
                             <div className="w-1/5 text-center">
-                                {item.status === 'success' && (<span className="text-gray-400">预览</span>)}
+                                {item.status === 'success' && (<span className="text-gray-400">{t('flowCompare')}</span>)}
                             </div>
 
                             {/* 4. 尺寸对比 (w-1/5) */}
@@ -276,7 +282,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                             <div className="p-4 border-t border-gray-200 bg-gray-50 flex space-x-6">
                                 {/* 原始图片 */}
                                 <div className="w-1/2 text-center">
-                                    <p className="font-semibold mb-2 text-gray-400">原图 ({formatBytes(item.originalSize)})</p>
+                                    <p className="font-semibold mb-2 text-gray-400">{tf('flowDetailOriginal', { 'size': formatBytes(item.originalSize) })}</p>
                                     <img
                                         src={URL.createObjectURL(item.originalFile)}
                                         alt="Original"
@@ -291,7 +297,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                                 {/* 处理后图片 */}
                                 <div className="w-1/2 text-center">
                                     <p className="font-semibold mb-2 text-green-600">
-                                        处理后 ({formatBytes(item.processedSize)})
+                                        {tf('flowDetailProcessed', { 'size': formatBytes(item.processedSize) })}
                                     </p>
                                     <img
                                         src={item.downloadUrl} // 使用处理后的 URL
@@ -309,7 +315,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                         {/* 失败详情 */}
                         {expandedId === item.id && item.status === 'failed' && (
                             <div className="p-4 border-t border-red-300 bg-red-100 text-red-800 rounded-b-xl">
-                                <strong>错误详情:</strong> {item.errorMessage}
+                                <strong>{t('flowDetailError')}</strong> {item.errorMessage}
                             </div>
                         )}
 

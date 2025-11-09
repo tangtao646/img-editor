@@ -1,6 +1,6 @@
 // app/components/ImageUploader.tsx
 "use client";
-
+import { useTranslation, Language } from '../lib/i18n';
 import React, { useCallback, useRef, useState } from 'react';
 
 interface ImageUploaderProps {
@@ -8,6 +8,8 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({ onFilesSelected }: ImageUploaderProps) {
+  const { t, tf } = useTranslation();
+
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,9 +52,9 @@ export default function ImageUploader({ onFilesSelected }: ImageUploaderProps) {
         ref={fileInputRef}
       />
       <p className="text-xl font-medium text-gray-700">
-        📥 拖放图片到此处，或点击选择文件
+        📥 {t('uploaderDragText')}
       </p>
-      <p className="text-sm text-gray-500 mt-1">支持 JPG, PNG, BMP, TIFF 等常见格式</p>
+      <p className="text-sm text-gray-500 mt-1">{t('uploaderDragSubtext')}</p>
     </div>
   );
 }
