@@ -31,7 +31,7 @@ export default function HomePage() {
 
     // 在组件渲染完成后，尝试推送广告
     useEffect(() => {
-        if (!isDisabled && AD_CLIENT_ID && AD_CLIENT_ID !== 'ca-pub-1722415139380919') {
+        if (!isDisabled && AD_CLIENT_ID) {
             pushAdsense();
         }
     }, [isDisabled, settings]);
