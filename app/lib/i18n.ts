@@ -20,9 +20,9 @@ const TRANSLATIONS = {
 
     // ImageUploader Strings
     chooseImages: '选择图片',
-    uploaderCount: '已上传 {count} 个文件',
-    uploaderDragText: '拖放图片到此，或点击上传',
-    uploaderDragSubtext: '支持 PNG, JPEG, GIF 等格式的批量上传。',
+    uploaderCount: '已选择 {count} 个文件',
+    uploaderDragText: '拖放图片到此，或点击选择',
+    uploaderDragSubtext: '支持 PNG, JPEG, GIF 等格式的图片。',
     uploaderListHeading: '已加载文件列表:',
     uploaderRemoveTitle: '移除文件',
 
@@ -68,6 +68,9 @@ const TRANSLATIONS = {
     flowDetailProcessed: '处理后 ({size})',
     flowDetailLoadingDimensions: '等待尺寸',
     flowDetailError: '错误详情:',
+    flowPreviousPage:' 上一页',
+    flowNextPage:' 下一页',
+    flowprefix:'第 {currentPage} 页，共 {itemCounts} 页 ',
   },
   en: {
     // App Page Strings
@@ -85,9 +88,9 @@ const TRANSLATIONS = {
 
     // ImageUploader Strings
     chooseImages: 'Choose Images',
-    uploaderCount: 'Uploaded {count} files',
-    uploaderDragText: 'Drag and drop images here, or click to upload',
-    uploaderDragSubtext: 'Supports batch upload for PNG, JPEG, GIF, and more.',
+    uploaderCount: '{count} files selected',
+    uploaderDragText: 'Drag and drop images here, or click to select',
+    uploaderDragSubtext: 'Supports PNG, JPEG, GIF and more image formats.',
     uploaderListHeading: 'Loaded Files List:',
     uploaderRemoveTitle: 'Remove file',
 
@@ -133,6 +136,9 @@ const TRANSLATIONS = {
     flowDetailProcessed: 'Processed ({size})',
     flowDetailLoadingDimensions: 'Waiting for dimensions',
     flowDetailError: 'Error Details:',
+    flowPreviousPage:' Previous Page',
+    flowNextPage:' Next Page',
+    flowprefix:'Page {currentPage} of {itemCounts} ',
   }
 };
 

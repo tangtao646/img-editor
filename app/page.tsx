@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 import { useTranslation, Language } from './lib/i18n';
-import React, { useState, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'; // 引入 useRef
 import ImageUploader from './components/ImageUploader';
 import { ProcessSettings, defaultSettings } from './components/ProcessSettings';
 import ProcessingFlow from './components/ProcessingFlow';
@@ -24,6 +24,7 @@ const pushAdsense = () => {
 };
 
 export default function HomePage() {
+    const processingRef = useRef<HTMLDivElement | null>(null);
     const { lang, setLang, t, tf } = useTranslation();
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [settings, setSettings] = useState<ToolSettings>(defaultSettings);
@@ -32,10 +33,22 @@ export default function HomePage() {
 
     // 在组件渲染完成后，尝试推送广告
     useEffect(() => {
+        // 只有当文件数量 > 0 且 ref 元素存在时才滚动
+        if (fileCount > 0) {
+            // 给组件渲染一些时间
+            setTimeout(() => {
+                if (processingRef.current) {
+                    processingRef.current.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 100);
+        }
         if (!isDisabled && AD_CLIENT_ID) {
             pushAdsense();
         }
-    }, [isDisabled, settings]);
+    }, [isDisabled, settings, fileCount]);
 
     return (
         // 整体背景使用柔和的浅色，移除原有的整体 padding
@@ -113,18 +126,21 @@ export default function HomePage() {
                                 </h2>
                                 <ImageUploader onFilesSelected={setUploadedFiles} />
                             </div>
-                           
-                            <ProcessSettings settings={settings} onSettingsChange={setSettings} isDisabled={false} />
+
+                            <div ref={processingRef}>
+                                <ProcessSettings settings={settings} onSettingsChange={setSettings} isDisabled={false} />
+                            </div>
 
                             {/* 2. 配置与 3. 执行 (上传文件后显示) */}
-                            {fileCount > 0 && (
 
+                            {fileCount > 0 && (
                                 <ProcessingFlow
                                     files={uploadedFiles}
                                     settings={settings}
                                 />
 
-                            ) }
+                            )}
+
 
                         </main>
 

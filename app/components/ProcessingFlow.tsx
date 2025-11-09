@@ -29,6 +29,8 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
     const [progress, setProgress] = useState(0);
     // 状态：用于控制哪个文件的预览处于展开状态
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
 
     // 初始化/重置处理列表 (添加了 originalDimensions)
@@ -158,6 +160,12 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
     const totalSizeReduction = totalOriginalSize - totalProcessedSize;
     const sizeDiffPercentage = totalOriginalSize > 0 ? ((totalOriginalSize - totalProcessedSize) / totalOriginalSize) * 100 : 0;
 
+    // 计算当前页的数据
+    const currentItems = processedList.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
 
     return (
         <div className="my-8 p-6 bg-white rounded-xl shadow-lg">
@@ -221,7 +229,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
 
             {/* 文件列表 - 升级为可交互的对比面板 */}
             <div className="mt-6 space-y-3">
-                {processedList.map((item) => (
+                {currentItems.map((item) => (
                     <div key={item.id} className={`border rounded-xl transition-all duration-300 ${item.status === 'success' ? 'border-green-300 bg-white shadow-sm hover:shadow-md' :
                         item.status === 'failed' ? 'border-red-400 bg-red-50 shadow-inner' :
                             item.status === 'processing' ? 'border-blue-300 bg-blue-50 shadow-inner' :
@@ -321,6 +329,27 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
 
                     </div>
                 ))}
+            </div>
+
+            {/* 分页控制 */}
+            <div className="mt-4 flex justify-center">
+                <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 transition-all duration-200"
+                >
+                   {t('flowPreviousPage')}
+                </button>
+                <span className="mx-4 text-gray-400" >
+                    {tf('flowprefix', { 'currentPage': currentPage, 'itemCounts': Math.ceil(processedList.length / itemsPerPage) })}
+                </span>
+                <button
+                    onClick={() => setCurrentPage(p => p + 1)}
+                    disabled={currentPage >= Math.ceil(processedList.length / itemsPerPage)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 transition-all duration-200"
+                >
+                     {t('flowNextPage')}
+                </button>
             </div>
         </div>
     );
