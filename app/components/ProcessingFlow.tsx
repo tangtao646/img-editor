@@ -1,15 +1,18 @@
 // app/components/ProcessingFlow.tsx
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation, Language } from '../lib/i18n';
 import { ToolSettings, ProcessedFile } from '../lib/types';
 import { processImage, loadImage } from '../lib/imageProcessor';
 import { batchDownload } from '../lib/batchDownloader';
+import { on } from 'events';
 
 interface ProcessingFlowProps {
     files: File[];
     settings: ToolSettings;
+    onAddImg: (fires: File[]) => void;
+    onImgClear: () => void;
 }
 
 // 辅助函数：格式化字节大小为可读的 MB/KB
@@ -22,7 +25,7 @@ const formatBytes = (bytes: number) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
-export default function ProcessingFlow({ files, settings }: ProcessingFlowProps) {
+export default function ProcessingFlow({ files, settings, onAddImg, onImgClear }: ProcessingFlowProps) {
     const { t, tf } = useTranslation();
     const [processedList, setProcessedList] = useState<ProcessedFile[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -31,7 +34,20 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    // 新增：用于触发文件选择框的 ref
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [showConfirmClear, setShowConfirmClear] = useState(false);
 
+    const handleClearClick = () => setShowConfirmClear(true);
+    const handleCancelClear = () => setShowConfirmClear(false);
+    const handleConfirmClear = () => {
+        // setProcessedList([]);
+        // setProgress(0);
+        // setCurrentPage(1);
+        // setExpandedId(null);
+        onImgClear();
+        setShowConfirmClear(false);
+    };
 
     // 初始化/重置处理列表 (添加了 originalDimensions)
     useEffect(() => {
@@ -141,6 +157,23 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
         setIsProcessing(false);
     }, [processedList, files.length, settings, isProcessing]);
 
+    const handleAddMoreClick = () => {
+        // 触发隐藏的文件选择框
+        fileInputRef.current?.click();
+    };
+
+    const handleFilesAdded = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const fileList = Array.from(e.target.files || []);
+        if (fileList.length === 0) {
+            // 重置 input 值以允许后续选择相同文件
+            e.currentTarget.value = '';
+            return;
+        }
+        onAddImg(fileList)
+        // 重置 input 值，允许重复选择同一组文件
+        e.currentTarget.value = '';
+    };
+
     // --- 渲染辅助函数 ---
 
     const renderFileStatus = (item: ProcessedFile) => {
@@ -186,8 +219,31 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                                 {tf('flowProcessing', { 'progress': progress })}
 
                             </div>
-                        ) : t('flowStartProcessing')}
+                        ) : tf('flowStartProcessing', { "count": processedList.length })}
                     </button>
+                )}
+
+                {/* 新增：继续添加 按钮（仅当列表不为空且存在 pending 状态项时显示） */}
+                {successCount <= 0 && processedList.length > 0 && (
+                    <>
+                        <button
+                            onClick={handleAddMoreClick}
+                            disabled={isProcessing}
+                            className="bg-gray-100 hover:bg-gray-200 text-blue-600 font-medium py-3 px-5 rounded-lg text-lg transition-all duration-200 shadow-sm"
+                        >
+                            + {t('flowAddMore')}
+                        </button>
+
+                        {/* 隐藏的文件输入框 */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFilesAdded}
+                            className="hidden"
+                        />
+                    </>
                 )}
 
                 {/* 下载按钮 - 完成时突出显示 */}
@@ -200,6 +256,31 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                         ⬇️ {tf('flowDownloadAll', { 'count': successCount })}
                     </button>
                 )}
+
+                {/* 清空按钮 - 仅当有图片时显示 */}
+                {!isProcessing && processedList.length > 0 && (
+                    <button
+                        onClick={handleClearClick}
+                        disabled={isProcessing}
+                        className="ml-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-5 rounded-lg text-lg transition-all duration-200 shadow-sm"
+                    >
+                        {t('flowClear')}
+                    </button>
+                )}
+                {/* 确认清空对话框 */}
+                {showConfirmClear && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                            <h3 className="text-lg text-gray-900 font-semibold mb-2">{t('flowClearConfirmTitle')}</h3>
+                            <p className="text-sm text-gray-600 mb-6">{t('flowClearConfirmDesc')}</p>
+                            <div className="flex justify-end space-x-3">
+                                <button onClick={handleCancelClear} className="px-4 py-2 rounded-md bg-gray-100 text-gray-400">{t('cancel')}</button>
+                                <button onClick={handleConfirmClear} className="px-4 py-2 rounded-md bg-red-600 text-white">{t('flowClear')}</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
 
                 {/* 补充：处理完成提示 (在没有下载按钮时，例如没有成功的图片) */}
                 {progress === 100 && successCount === 0 && !isProcessing && (
@@ -338,7 +419,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                     disabled={currentPage === 1}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 transition-all duration-200"
                 >
-                   {t('flowPreviousPage')}
+                    {t('flowPreviousPage')}
                 </button>
                 <span className="mx-4 text-gray-400" >
                     {tf('flowprefix', { 'currentPage': currentPage, 'itemCounts': Math.ceil(processedList.length / itemsPerPage) })}
@@ -348,7 +429,7 @@ export default function ProcessingFlow({ files, settings }: ProcessingFlowProps)
                     disabled={currentPage >= Math.ceil(processedList.length / itemsPerPage)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:bg-gray-400 transition-all duration-200"
                 >
-                     {t('flowNextPage')}
+                    {t('flowNextPage')}
                 </button>
             </div>
         </div>

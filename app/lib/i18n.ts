@@ -9,6 +9,7 @@ const TRANSLATIONS = {
     title: '图片优化助手',
     subtitle: '本地批量图片处理工具',
     aboutUs: '关于我们',
+    contact: '联系我们',
     donate: '捐赠赞助',
     mainHeading: '批量图片处理流程',
     mainDescription: '轻松实现图片格式转换、尺寸调整和文件大小优化。',
@@ -25,6 +26,7 @@ const TRANSLATIONS = {
     uploaderDragSubtext: '支持 PNG, JPEG, GIF 等格式的图片。',
     uploaderListHeading: '已加载文件列表:',
     uploaderRemoveTitle: '移除文件',
+    cancel: '取消',
 
     // ProcessSettings Strings
     settingsHeading: '处理配置',
@@ -52,7 +54,11 @@ const TRANSLATIONS = {
 
     // ProcessingFlow Strings
     flowHeading: '执行与结果',
-    flowStartProcessing: '开始批量处理',
+    flowStartProcessing: '开始批量处理({count})',
+    flowAddMore: '继续添加',
+    flowClear: '清空',
+    flowClearConfirmTitle: '确认清空所有图片吗？',
+    flowClearConfirmDesc: '此操作将移除所有图片和处理结果，无法撤销。',
     flowProcessing: '处理中 ({progress}%)',
     flowDownloadAll: '下载所有 ({count})',
     flowSummaryTitle: '处理概览: {successCount}/{totalCount} 张图片已完成',
@@ -68,15 +74,16 @@ const TRANSLATIONS = {
     flowDetailProcessed: '处理后 ({size})',
     flowDetailLoadingDimensions: '等待尺寸',
     flowDetailError: '错误详情:',
-    flowPreviousPage:' 上一页',
-    flowNextPage:' 下一页',
-    flowprefix:'第 {currentPage} 页，共 {itemCounts} 页 ',
+    flowPreviousPage: ' 上一页',
+    flowNextPage: ' 下一页',
+    flowprefix: '第 {currentPage} 页，共 {itemCounts} 页 ',
   },
   en: {
     // App Page Strings
     title: 'Image Optimization Toolkit',
     subtitle: 'Local Batch Image Processor',
     aboutUs: 'About Us',
+    contact: 'Contact Us',
     donate: 'Donate / Support',
     mainHeading: 'Batch Image Processing Flow',
     mainDescription: 'Easily convert formats, resize, and optimize file sizes.',
@@ -93,6 +100,7 @@ const TRANSLATIONS = {
     uploaderDragSubtext: 'Supports PNG, JPEG, GIF and more image formats.',
     uploaderListHeading: 'Loaded Files List:',
     uploaderRemoveTitle: 'Remove file',
+    cancel: 'Cancel',
 
     // ProcessSettings Strings
     settingsHeading: 'Processing Settings',
@@ -120,7 +128,11 @@ const TRANSLATIONS = {
 
     // ProcessingFlow Strings
     flowHeading: 'Execution & Results',
-    flowStartProcessing: 'Start Batch Processing',
+    flowStartProcessing: 'Start Batch Processing ({count})',
+    flowAddMore: 'Add More',
+    flowClear: 'Clear',
+    flowClearConfirmTitle: 'Confirm clearing all images?',
+    flowClearConfirmDesc: 'This will remove all images and processing results and cannot be undone.',
     flowProcessing: 'Processing ({progress}%)',
     flowDownloadAll: 'Download All ({count})',
     flowSummaryTitle: 'Processing Summary: {successCount}/{totalCount} images completed',
@@ -136,9 +148,10 @@ const TRANSLATIONS = {
     flowDetailProcessed: 'Processed ({size})',
     flowDetailLoadingDimensions: 'Waiting for dimensions',
     flowDetailError: 'Error Details:',
-    flowPreviousPage:' Previous Page',
-    flowNextPage:' Next Page',
-    flowprefix:'Page {currentPage} of {itemCounts} ',
+    flowPreviousPage: ' Previous Page',
+    flowNextPage: ' Next Page',
+    flowprefix: 'Page {currentPage} of {itemCounts} ',
+
   }
 };
 

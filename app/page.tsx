@@ -50,6 +50,7 @@ export default function HomePage() {
         }
     }, [isDisabled, settings, fileCount]);
 
+
     return (
         // 整体背景使用柔和的浅色，移除原有的整体 padding
         <div className="min-h-screen bg-gray-50">
@@ -72,7 +73,7 @@ export default function HomePage() {
                     {/* 右侧导航项 (可选) */}
                     <nav className="space-x-6 text-gray-600 font-medium hidden md:flex">
                         {/* 占位链接 */}
-                        <a href="#" className="hover:text-indigo-600 transition-colors">{t('aboutUs')}</a>
+                        <a href="#" className="hover:text-indigo-600 transition-colors">{t('contact')}</a>
                         <a href="#" className="hover:text-indigo-600 transition-colors">{t('donate')}</a>
                     </nav>
                 </div>
@@ -137,6 +138,11 @@ export default function HomePage() {
                                 <ProcessingFlow
                                     files={uploadedFiles}
                                     settings={settings}
+                                    onAddImg={(files) => {
+                                        setUploadedFiles(prev => [...prev, ...files]);
+
+                                    }}
+                                    onImgClear={() => setUploadedFiles([])}
                                 />
 
                             )}
