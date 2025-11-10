@@ -15,6 +15,7 @@ import { AdUnit } from './components/AdUnit';
 import { useAdsense } from './lib/useAdsense'; // Import the custom hook
 import Modal from './components/Modal'; // 导入 Modal 组件
 
+const BUY_ME_A_COFFEE_URL = 'https://buymeacoffee.com/tangtao';
 
 export default function HomePage() {
     const processingRef = useRef<HTMLDivElement | null>(null);
@@ -163,9 +164,27 @@ export default function HomePage() {
                 </div>
                 <div className="mt-6 flex justify-center space-x-3">
                     <a
-                        href="https://buymeacoffee.com/tangtao"
+                        href={BUY_ME_A_COFFEE_URL}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
+                        referrerPolicy="no-referrer"
+                        onClick={(e) => {
+                            e.preventDefault(); // 使用受控打开，先做校验
+                            try {
+                                const url = new URL(BUY_ME_A_COFFEE_URL);
+                                // 域名白名单校验（只允许 buymeacoffee.com）
+                                if (url.hostname.endsWith('buymeacoffee.com')) {
+                                    const newWin = window.open(url.toString(), '_blank');
+                                    // 兼容性兜底：清除 opener（部分老旧浏览器可能不支持 rel）
+                                    if (newWin) try { (newWin as any).opener = null; } catch (_) { /* ignore */ }
+                                } else {
+                                    // 可记录警告或提示用户
+                                    console.warn('Blocked external link to', url.hostname);
+                                }
+                            } catch (err) {
+                                console.error('Invalid donate URL', err);
+                            }
+                        }}
                         className="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg shadow"
                     >
                         {t('buymeacoffee')}
