@@ -7,6 +7,7 @@ import { ToolSettings, ProcessedFile } from '../lib/types';
 import { processImage, loadImage } from '../lib/imageProcessor';
 import { batchDownload } from '../lib/batchDownloader';
 import { on } from 'events';
+import { makeUid } from '../lib/fileid';
 
 interface ProcessingFlowProps {
     files: File[];
@@ -53,7 +54,7 @@ export default function ProcessingFlow({ files, settings, onAddImg, onImgClear }
     useEffect(() => {
         // 1. 初始化列表结构 (同步操作)
         const initialList: ProcessedFile[] = files.map(file => ({
-            id: file.name,
+            id: makeUid(file.name),
             originalFile: file,
             status: 'pending' as 'pending',
             originalSize: file.size,

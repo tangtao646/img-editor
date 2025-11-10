@@ -1,6 +1,7 @@
 // app/lib/imageProcessor.ts
 import imageCompression from 'browser-image-compression';
 import { ToolSettings, ProcessedFile } from './types';
+import { makeUid } from './fileid';
 
 // 提取 imageCompression 的 Options 类型
 type CompressionOptions = Parameters<typeof imageCompression>[1]; 
@@ -24,6 +25,8 @@ export const loadImage = (file: File | Blob): Promise<HTMLImageElement> => {
         img.src = url;
     });
 };
+
+
 
 // 核心图片处理函数
 export async function processImage(file: File, settings: ToolSettings): Promise<ProcessedFile> {
@@ -126,7 +129,7 @@ export async function processImage(file: File, settings: ToolSettings): Promise<
         const newFileName = file.name.replace(/\.[^/.]+$/, "") + `_processed.${outputExtension}`;
         
         const finalProcessedFile: ProcessedFile = {
-            id: file.name,
+            id: makeUid(file.name),
             originalFile: file,
             status: 'success',
             originalSize: file.size,
@@ -146,7 +149,7 @@ export async function processImage(file: File, settings: ToolSettings): Promise<
         console.error('Image processing failed:', error);
         // 失败时必须提供所有非可选属性的默认值
         const failedFile: ProcessedFile = {
-            id: file.name,
+            id: makeUid(file.name),
             originalFile: file,
             status: 'failed',
             errorMessage: error instanceof Error ? error.message : '未知处理错误',

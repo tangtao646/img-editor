@@ -8,57 +8,49 @@ import ProcessingFlow from './components/ProcessingFlow';
 import { ToolSettings } from './lib/types';
 import {
     AD_CLIENT_ID,
-    AD_SLOT_SETTINGS_RECTANGLE
+    AD_SLOT_LEFT_SKYSCRAPER,
+    AD_SLOT_RIGHT_SKYSCRAPER,
 } from './lib/adConfig';
+import { AdUnit } from './components/AdUnit';
+import { useAdsense } from './lib/useAdsense'; // Import the custom hook
+import Modal from './components/Modal'; // 导入 Modal 组件
 
-const isDisabled = false;
-
-// 辅助函数：运行广告推送
-const pushAdsense = () => {
-    try {
-        // @ts-ignore
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (e) {
-        console.error('AdSense push failed in ProcessSettings:', e);
-    }
-};
 
 export default function HomePage() {
     const processingRef = useRef<HTMLDivElement | null>(null);
-    const { lang, setLang, t, tf } = useTranslation();
+    const { t } = useTranslation();
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [settings, setSettings] = useState<ToolSettings>(defaultSettings);
+    const [showDonate, setShowDonate] = useState(false);
+    const [showContact, setShowContact] = useState(false);
 
-    const fileCount = uploadedFiles.length;
-
-    // 在组件渲染完成后，尝试推送广告
+    // 合并 ESC 键处理逻辑
     useEffect(() => {
-        // 只有当文件数量 > 0 且 ref 元素存在时才滚动
-        if (fileCount > 0) {
-            // 给组件渲染一些时间
-            setTimeout(() => {
-                if (processingRef.current) {
-                    processingRef.current.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }, 100);
-        }
-        if (!isDisabled && AD_CLIENT_ID) {
-            pushAdsense();
-        }
-    }, [isDisabled, settings, fileCount]);
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setShowDonate(false);
+                setShowContact(false);
+            }
+        };
 
+        if (showDonate || showContact) {
+            window.addEventListener('keydown', handleEsc);
+            return () => window.removeEventListener('keydown', handleEsc);
+        }
+    }, [showDonate, showContact]);
+
+    // Replace the old ad initialization with the hook
+    useAdsense();
 
     return (
-        // 整体背景使用柔和的浅色，移除原有的整体 padding
         <div className="min-h-screen bg-gray-50">
             <script
                 async
-                src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
+                src={`https://pagead2.googlesyndicate.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
                 crossOrigin="anonymous"
-            ></script>
+            />
+
+
 
             {/* --- 新增：导航栏 (Header) --- */}
             <header className="w-full bg-white shadow-lg sticky top-0 z-50 py-4 px-4 md:px-10 border-b border-gray-200">
@@ -73,8 +65,23 @@ export default function HomePage() {
                     {/* 右侧导航项 (可选) */}
                     <nav className="space-x-6 text-gray-600 font-medium hidden md:flex">
                         {/* 占位链接 */}
-                        <a href="#" className="hover:text-indigo-600 transition-colors">{t('contact')}</a>
-                        <a href="#" className="hover:text-indigo-600 transition-colors">{t('donate')}</a>
+                        <div>
+                            <a
+                                href="#"
+                                onClick={() => setShowContact(true)}
+                                className="hover:text-indigo-600 transition-colors cursor-pointer"
+                            >
+                                {t('contact')}
+                            </a>
+                        </div>
+                        <div>
+                            <a
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); setShowDonate(true); }}
+                                className="hover:text-indigo-600 transition-colors cursor-pointer">
+                                {t('donate')}
+                            </a>
+                        </div>
                     </nav>
                 </div>
             </header>
@@ -88,21 +95,7 @@ export default function HomePage() {
 
                     {/* --- 广告位 D: 左侧摩天大楼 (Skyscraper) --- */}
                     {/* sticky top-10 确保广告位于粘性导航栏下方 */}
-                    <div className="hidden xl:block sticky top-20 h-min">
-                        <div
-                            className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-sm font-mono p-1"
-                            // 宽度和高度调整
-                            style={{ width: '160px', height: '300px', fontSize: '10px' }}
-                        >
-                            {/* 修复 ins 标签自闭合问题 */}
-                            <ins
-                                className="adsbygoogle"
-                                style={{ display: 'inline-block', width: '100%', height: '100%' }}
-                                data-ad-client={AD_CLIENT_ID}
-                                data-ad-slot={AD_SLOT_SETTINGS_RECTANGLE}
-                            ></ins>
-                        </div>
-                    </div>
+                    <AdUnit AdId={AD_CLIENT_ID} slot={AD_SLOT_LEFT_SKYSCRAPER} />
 
 
                     {/* --- 主内容列 (居中) --- */}
@@ -134,7 +127,7 @@ export default function HomePage() {
 
                             {/* 2. 配置与 3. 执行 (上传文件后显示) */}
 
-                            {fileCount > 0 && (
+                            {uploadedFiles.length > 0 && (
                                 <ProcessingFlow
                                     files={uploadedFiles}
                                     settings={settings}
@@ -157,24 +150,44 @@ export default function HomePage() {
                     </div>
 
                     {/* --- 广告位 E: 右侧摩天大楼 (Skyscraper) --- */}
-                    <div className="hidden xl:block sticky top-20 h-min">
-                        <div
-                            className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-sm font-mono p-1"
-                            // 宽度和高度调整
-                            style={{ width: '160px', height: '300px', fontSize: '10px' }}
-                        >
-                            {/* 修复 ins 标签自闭合问题 */}
-                            <ins
-                                className="adsbygoogle"
-                                style={{ display: 'inline-block', width: '100%', height: '100%' }}
-                                data-ad-client={AD_CLIENT_ID}
-                                data-ad-slot={AD_SLOT_SETTINGS_RECTANGLE}
-                            ></ins>
-                        </div>
-                    </div>
+                    <AdUnit AdId={AD_CLIENT_ID} slot={AD_SLOT_RIGHT_SKYSCRAPER} />
 
                 </div>
             </div>
+
+            {/* Donate Modal */}
+            <Modal isOpen={showDonate} onClose={() => setShowDonate(false)} title={t('donate')}>
+                <p className="text-sm text-gray-600 mt-3">{t('donateDescription')}</p>
+                <div className="mt-4 flex justify-center">
+                    <img src="/qr-code.png" alt="Donate QR" className="w-48 h-48 object-contain rounded-md border" />
+                </div>
+                <div className="mt-6 flex justify-center space-x-3">
+                    <a
+                        href="https://buymeacoffee.com/tangtao"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg shadow"
+                    >
+                        {t('buymeacoffee')}
+                    </a>
+                </div>
+            </Modal>
+
+            {/* Contact Modal */}
+            <Modal isOpen={showContact} onClose={() => setShowContact(false)} title={t('fadeback')}>
+                <p className="text-sm text-gray-600 mb-4">{t('fadebackDesc')}</p>
+                <div className="text-sm text-gray-700 mb-4">
+                    {t('sendTo')} <a className="text-indigo-600">{t('myEmail')}</a>
+                </div>
+                <div className="mt-6 flex justify-center space-x-3">
+                    <button
+                        onClick={() => { setShowContact(false); }}
+                        className="px-4 py-2 rounded-md bg-blue-600 text-white"
+                    >
+                        {t('confirm')}
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 }
