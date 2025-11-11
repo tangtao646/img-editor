@@ -6,9 +6,8 @@ import { useState, useCallback, use } from 'react';
 const TRANSLATIONS = {
   zh: {
     // App Page Strings
-    title: '图片编辑助手',
-    toolkitdescription: '在浏览器本地进行批量调整尺寸和 WebP 格式转换的工具',
-    subtitle: '免费本地批量图片处理工具',
+    title: '批量图片处理大师',
+    subtitle: '本地图片批量转换与尺寸调整工具',
     aboutUs: '关于我们',
     contact: '联系我们',
     donate: '捐赠赞助',
@@ -18,7 +17,7 @@ const TRANSLATIONS = {
     myEmail: 'taoge646@gmail.com',
     confirm: '确认',
     buymeacoffee: '请我喝杯咖啡',
-    mainHeading: '批量图片处理流程',
+    mainHeading: '免费批量图片处理工具',
     mainDescription: '轻松实现图片格式转换、尺寸调整和文件大小优化。',
     placeholderEmpty: '拖放图片到此，或点击上传，开始您的优化之旅。',
     donateDescription: '如果你觉得这个工具有帮助，欢迎捐赠支持开发与服务器开销。',
@@ -88,9 +87,8 @@ const TRANSLATIONS = {
   },
   en: {
     // App Page Strings
-    title: 'Image Edit Toolkit',
-    toolkitdescription: 'A tool for batch resizing and WebP conversion locally in the browser',
-    subtitle: 'Free Local Batch Image Processor',
+    title: 'Batch Image Master',
+    subtitle: 'Local Batch Image Conversion and Resizing Tool',
     aboutUs: 'About Us',
     contact: 'Contact Us',
     donate: 'Donate',
@@ -101,7 +99,7 @@ const TRANSLATIONS = {
     confirm: 'Confirm',
     buymeacoffee: 'Buy Me a Coffee',
     donateDescription: 'If you find this tool helpful, consider donating to support development and server costs.',
-    mainHeading: 'Free Batch Image Processing Flow',
+    mainHeading: 'Free Batch Image Processor',
     mainDescription: 'Easily convert formats, resize, and optimize file sizes.',
     placeholderEmpty: 'Drag and drop images here, or click to upload and start your optimization journey.',
     footer: 'Powered by Image Optimization Toolkit | All processing is done locally in your browser',
