@@ -10,7 +10,7 @@ export const AdUnit = ({ AdId,slot, className }: AdUnitProps) => {
         <div className={`hidden xl:block sticky top-20 h-min ${className}`}>
             <div
                 className="bg-gray-100 text-gray-500 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-sm font-mono p-1"
-                style={{ width: 'auto', height: '450px', fontSize: '10px' }}
+                style={{ width: 'auto', height: '400px', fontSize: '10px' }}
             >
                 <ins
                     className="adsbygoogle"

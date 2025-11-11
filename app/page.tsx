@@ -45,11 +45,12 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <script
-                async
-                src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
-                crossOrigin="anonymous"
-            />
+            <head>
+                <script
+                    async
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
+                    crossOrigin="anonymous" />
+            </head>
 
 
 
