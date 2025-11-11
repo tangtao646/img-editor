@@ -25,6 +25,19 @@ export default function HomePage() {
     const [showDonate, setShowDonate] = useState(false);
     const [showContact, setShowContact] = useState(false);
 
+    // 当图片数量变化时，滚动到 ProcessingSetting
+    useEffect(() => {
+        if (uploadedFiles.length > 0 && processingRef.current) {
+            // 延迟滚动以确保 DOM 已更新
+            setTimeout(() => {
+                processingRef.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
+        }
+    }, [uploadedFiles.length]);
+
     // 合并 ESC 键处理逻辑
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
