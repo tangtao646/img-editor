@@ -1,12 +1,13 @@
 // app/lib/i18n.ts
-import { title } from 'process';
-import { useState, useCallback } from 'react';
+"use client"
+import { useState, useCallback, use } from 'react';
 
 // --- 翻译数据对象 (键名已全部改为小驼峰) ---
 const TRANSLATIONS = {
   zh: {
     // App Page Strings
     title: '图片编辑助手',
+    toolkitdescription: '在浏览器本地进行批量调整尺寸和 WebP 格式转换的工具',
     subtitle: '免费本地批量图片处理工具',
     aboutUs: '关于我们',
     contact: '联系我们',
@@ -88,6 +89,7 @@ const TRANSLATIONS = {
   en: {
     // App Page Strings
     title: 'Image Edit Toolkit',
+    toolkitdescription: 'A tool for batch resizing and WebP conversion locally in the browser',
     subtitle: 'Free Local Batch Image Processor',
     aboutUs: 'About Us',
     contact: 'Contact Us',
@@ -171,6 +173,13 @@ const TRANSLATIONS = {
 
 export type Language = keyof typeof TRANSLATIONS;
 export type TranslationKeys = keyof typeof TRANSLATIONS.zh;
+
+// 新增：服务端/非 React 环境使用的获取翻译函数（同步、无副作用）
+export function getTranslations(lang?: Language) {
+  // 优先使用传入的 lang，其次按常用 zh/en 回退
+  const key: Language = (lang && TRANSLATIONS[lang]) ? lang : 'zh';
+  return TRANSLATIONS[key];
+}
 
 
 /**
