@@ -3,10 +3,6 @@
 import { useTranslation, Language } from '../lib/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { ToolSettings } from '../lib/types';
-import {
-    AD_CLIENT_ID,
-    AD_SLOT_SETTINGS_RECTANGLE
-} from '../lib/adConfig';
 
 // 默认配置对象 (供 page.tsx 使用)
 export const defaultSettings: ToolSettings = {
@@ -30,26 +26,13 @@ interface ProcessSettingsProps {
     isDisabled: boolean;
 }
 
-// 辅助函数：运行广告推送
-const pushAdsense = () => {
-    try {
-        // @ts-ignore
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (e) {
-        console.error('AdSense push failed in ProcessSettings:', e);
-    }
-};
+
 
 export function ProcessSettings({ settings, onSettingsChange, isDisabled }: ProcessSettingsProps) {
     
     const { t, tf } = useTranslation();
 
-    // 在组件渲染完成后，尝试推送广告
-    useEffect(() => {
-        if (!isDisabled && AD_CLIENT_ID) {
-            pushAdsense();
-        }
-    }, [isDisabled, settings]);
+
 
     const handleChange = (group: keyof ToolSettings, key: string, value: any) => {
         onSettingsChange({

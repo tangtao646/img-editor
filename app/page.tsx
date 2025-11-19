@@ -61,10 +61,15 @@ export default function HomePage() {
         <div className="min-h-screen bg-gray-50">
             {/* 用 next/script 替代嵌套的 <head>（不能把 <head> 放在 <div> 内） */}
             <Script
-                async
                 src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT_ID}`}
                 crossOrigin="anonymous"
-                strategy="beforeInteractive"
+                strategy="afterInteractive"
+                onLoad={() => {
+                    console.log('AdSense script loaded');
+                }}
+                onError={(e) => {
+                    console.error('AdSense script failed to load', e);
+                }}
             />
 
             {/* --- 新增：导航栏 (Header) --- */}
