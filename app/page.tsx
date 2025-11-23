@@ -15,6 +15,7 @@ import { AdUnit } from './components/AdUnit';
 import { useAdsense } from './lib/useAdsense'; // Import the custom hook
 import Modal from './components/Modal'; // 导入 Modal 组件
 import Script from 'next/script';
+import { useAnalytics } from './lib/useAnalytics';
 
 const BUY_ME_A_COFFEE_URL = 'https://buymeacoffee.com/tangtao';
 
@@ -25,6 +26,8 @@ export default function HomePage() {
     const [settings, setSettings] = useState<ToolSettings>(defaultSettings);
     const [showDonate, setShowDonate] = useState(false);
     const [showContact, setShowContact] = useState(false);
+   
+    useAnalytics();
 
     // 当图片数量变化时，滚动到 ProcessingSetting
     useEffect(() => {

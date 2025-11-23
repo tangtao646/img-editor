@@ -9,7 +9,7 @@ export const AdUnit = ({ AdId, slot }: { AdId: string, slot: string }) => {
         <div className="hidden xl:block sticky top-20 h-min">
             <ins
                 className="adsbygoogle"
-                style={{ display: 'block', width: '160px', height: '600px' }}
+                style={{ display: 'block', width: '150px', height: '500px' }}
                 data-ad-client={AdId}
                 data-ad-slot={slot}
             />
